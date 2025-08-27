@@ -11,8 +11,11 @@ class MyHandler(BaseHTTPRequestHandler):
         if self.path == "/users":
             users = [
                 {"id": 1, "name": "Ankith", "role": "Software Developer"},
-                {"id": 2, "name": "Sara", "role": "Designer"},
-                {"id": 3, "name": "Mike", "role": "Tester"},
+                {"id": 2, "name": "Athul", "role": "Designer"},
+                {"id": 3, "name": "Adith", "role": "Tester"},
+                {"id": 4, "name": "Ayana", "role": "QA/QC"},
+                {"id": 5, "name": "Elsa", "role": "Designer"},
+                {"id": 6, "name": "Jai Krishnan", "role": "Software Developer"},
             ]
             self._set_headers()
             self.wfile.write(json.dumps(users).encode())
