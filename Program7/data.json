@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alex Doe",
+      "email": "alex.doe@example.com",
+      "city": "New York"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "city": "London"
+    },
+    {
+      "id": 3,
+      "name": "Chandra Kumar",
+      "email": "chandra.k@example.com",
+      "city": "Kozhikode"
+    },
+    {
+      "id": 4,
+      "name": "Yuki Tanaka",
+      "email": "yuki.tanaka@example.com",
+      "city": "Tokyo"
+    }
+  ]
+}
