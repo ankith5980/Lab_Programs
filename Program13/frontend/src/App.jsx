@@ -7,8 +7,12 @@ function App() {
   const [editId, setEditId] = useState(null);
 
   const fetchUsers = async () => {
-    const res = await axios.get('http://localhost:5000/users');
-    setUsers(res.data);
+    try {
+      const res = await axios.get('http://localhost:5000/users');
+      setUsers(res.data);
+    } catch (err) {
+      console.error('Failed to fetch users', err);
+    }
   };
 
   useEffect(() => {
@@ -17,14 +21,18 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editId) {
-      await axios.put(`http://localhost:5000/users/${editId}`, form);
-      setEditId(null);
-    } else {
-      await axios.post('http://localhost:5000/users', form);
+    try {
+      if (editId) {
+        await axios.put(`http://localhost:5000/users/${editId}`, form);
+        setEditId(null);
+      } else {
+        await axios.post('http://localhost:5000/users', form);
+      }
+      setForm({ name: '', email: '' });
+      fetchUsers();
+    } catch (err) {
+      console.error('Submit failed', err);
     }
-    setForm({ name: '', email: '' });
-    fetchUsers();
   };
 
   const handleEdit = (user) => {
@@ -33,47 +41,96 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/users/${id}`);
-    fetchUsers();
+    try {
+      await axios.delete(`http://localhost:5000/users/${id}`);
+      fetchUsers();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h2>User Management</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={e => setForm({ ...form, name: e.target.value })}
-        />
-        <input
-          placeholder="Email"
-          value={form.email}
-          onChange={e => setForm({ ...form, email: e.target.value })}
-        />
-        <button type="submit">{editId ? 'Update' : 'Add'} User</button>
-      </form>
+    <div className="app-container">
+      <header className="header">
+        <h1 className="header-title">User Management</h1>
+      </header>
 
-      <table border="1" style={{ margin: '20px auto', width: '60%' }}>
-        <thead>
-          <tr>
-            <th>ID</th><th>Name</th><th>Email</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(u => (
-            <tr key={u.id}>
-              <td>{u.id}</td>
-              <td>{u.name}</td>
-              <td>{u.email}</td>
-              <td>
-                <button onClick={() => handleEdit(u)}>Edit</button>
-                <button onClick={() => handleDelete(u.id)} style={{ marginLeft: '10px' }}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <main className="main-content">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">Full Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              placeholder="john@example.com"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            {editId ? 'Update User' : 'Add User'}
+          </button>
+
+          {editId && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditId(null);
+                setForm({ name: '', email: '' });
+              }}
+              className="btn btn-secondary"
+            >Cancel
+            </button>
+          )}
+        </form>
+
+        <div className="user-list">
+          <h2 className="user-list-title">User Directory ({users.length})</h2>
+
+          {users.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-title">No Users Yet!</div>
+            </div>
+          ) : (
+            users.map((user) => (
+              <div key={user.id} className="user-card">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div className="user-avatar">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="user-info">
+                    <h3>{user.name}</h3>
+                    <p>{user.email}</p>
+                    <small>ID: {user.id}</small>
+                  </div>
+                </div>
+                <div className="user-actions">
+                  <button onClick={() => handleEdit(user)} className="btn btn-warning">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(user.id)} className="btn btn-danger">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </main>
     </div>
   );
 }
